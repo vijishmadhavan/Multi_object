@@ -12,53 +12,19 @@ from detectron2.utils.visualizer import Visualizer
 from detectron2.data import MetadataCatalog
 
 # Classes of amenities Airbnb mostly cares about
-subset = ['Toilet',
-         'Swimming pool',
-         'Bed',
-         'Billiard table',
-         'Sink',
-         'Fountain',
-         'Oven',
-         'Ceiling fan',
-         'Television',
-         'Microwave oven',
-         'Gas stove',
-         'Refrigerator',
-         'Kitchen & dining room table',
-         'Washing machine',
-         'Bathtub',
-         'Stairs',
-         'Fireplace',
-         'Pillow',
-         'Mirror',
-         'Shower',
-         'Couch',
-         'Countertop',
-         'Coffeemaker',
-         'Dishwasher',
-         'Sofa bed',
-         'Tree house',
-         'Towel',
-         'Porch',
-         'Wine rack',
-         'Jacuzzi']
+subset=['Ceiling fan','Lamp','Bed','Couch','Television']
 
 # Put target classes in alphabetical order (required for the labels being generated)
 subset.sort()
 
 # Set up default variables
-CONFIG_FILE = "retinanet_model_final/retinanet_model_final_config.yaml"
-MODEL_FILE = "retinanet_model_final/retinanet_model_final.pth"
+CONFIG_FILE = "https://www.dropbox.com/s/jf9kbjjf4otdhxm/config%20%281%29.yaml?dl=1 "
+MODEL_FILE = "https://www.dropbox.com/s/3d6kue2zokr2vo5/model_final%20%281%29.pth?dl=0"
 
 # TODO Way to load model with @st.cache so it doesn't take a long time each time
 @st.cache(allow_output_mutation=True)
 def create_predictor(model_config, model_weights, threshold):
-    """
-    Loads a Detectron2 model based on model_config, model_weights and creates a default
-    Detectron2 predictor.
 
-    Returns Detectron2 default predictor and model config.
-    """
     cfg = get_cfg()
     cfg.merge_from_file(model_config)
     cfg.MODEL.DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -73,7 +39,7 @@ def create_predictor(model_config, model_weights, threshold):
 # Inference function - TODO this could probably be abstracted somewhere else... 
 from detectron2.engine import DefaultPredictor
 
-def make_inference(image, model_config, model_weights, threshold=0.5, n=5, save=False):
+def make_inference(image, model_config, model_weights, threshold=0.5, n=4, save=False):
   """
   Makes inference on image (single image) using model_config, model_weights and threshold.
 
@@ -113,8 +79,7 @@ def make_inference(image, model_config, model_weights, threshold=0.5, n=5, save=
   return vis.get_image(), instances[:n]
 
 def main():
-    st.title("Airbnb Amenity Detection 👁")
-    st.write("This application replicates [Airbnb's machine learning powered amenity detection](https://medium.com/airbnb-engineering/amenity-detection-and-beyond-new-frontiers-of-computer-vision-at-airbnb-144a4441b72e).")
+    st.title("Multi_object_tracking 👁")
     st.write("## How does it work?")
     st.write("Add an image of a room and a machine learning learning model will look at it and find the amenities like the example below:")
     st.image(Image.open("images/example-amenity-detection.png"), 
@@ -131,7 +96,7 @@ def main():
         
         n_boxes_to_draw = st.slider(label="Number of amenities to detect (boxes to draw)",
                                     min_value=1, 
-                                    max_value=10, 
+                                    max_value=5, 
                                     value=5)
 
         # Make sure image is RGB
@@ -158,12 +123,5 @@ def main():
           st.write("Amenities detected:")
           st.write([subset[i] for i in classes])
         
-    st.write("## How is this made?")
-    st.write("The machine learning happens with a fine-tuned [Detectron2](https://detectron2.readthedocs.io/) model (PyTorch), \
-    this front end (what you're reading) is built with [Streamlit](https://www.streamlit.io/) \
-    and it's all hosted on [Google's App Engine](https://cloud.google.com/appengine/).")
-    st.write("See the [code on GitHub](https://github.com/mrdbourke/airbnb-object-detection) and a [YouTube playlist](https://www.youtube.com/playlist?list=PL6vjgQ2-qJFeMrZ0sBjmnUBZNX9xaqKuM) detailing more below.")
-    st.video("https://youtu.be/C_lIenSJb3c")
-
 if __name__ == "__main__":
     main()

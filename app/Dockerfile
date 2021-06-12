@@ -1,15 +1,15 @@
  FROM python:3.7
 
-WORKDIR /enhance
+WORKDIR /app
 
 COPY requirements.txt ./requirements.txt
 
-RUN pip3 install -r requirements.txt
+RUN xargs -L 1 pip install < requirements.txt
 
 EXPOSE 8501
 
-COPY . /enhance
+COPY . /app
 
 ENTRYPOINT ["streamlit","run"]
 
-CMD ["Good.py"]
+CMD ["app.py"]

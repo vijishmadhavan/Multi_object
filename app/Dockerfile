@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt ./requirements.txt
 
-RUN xargs -L 1 pip install < requirements.txt
+RUN pip3 install -r requirements.txt
 
 EXPOSE 8501
 
